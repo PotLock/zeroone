@@ -35,7 +35,6 @@ export async function authenticate(
     const payload = await verifyToken(token, {
       secretKey: process.env.CLERK_SECRET_KEY,
       audience: process.env.CLERK_JWT_AUDIENCE,
-      issuer: process.env.CLERK_JWT_ISSUER,
       clockSkewInMs: 10_000, // tolerate up to 10s clock drift
     });
 

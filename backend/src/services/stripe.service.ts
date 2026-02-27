@@ -46,7 +46,7 @@ export class StripeService {
     }
     
     this.stripe = new Stripe(stripeSecretKey, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-02-24.acacia",
       typescript: true,
     });
   }
@@ -462,7 +462,7 @@ export class StripeService {
       try {
         const pm = await this.stripe.paymentMethods.retrieve(paymentMethod);
         // Crypto payments in Stripe are typically identified by type
-        isCrypto = pm.type === "crypto";
+        isCrypto = (pm.type as string) === "crypto";
         if (isCrypto) {
           cryptoCurrency = "USDC"; // Stripe currently supports USDC primarily
         }
@@ -484,7 +484,9 @@ export class StripeService {
       cryptoAmount: isCrypto ? invoice.amount_paid / 100 : undefined,
       cryptoCurrency: isCrypto ? cryptoCurrency : undefined,
       paymentMethod: isCrypto ? "crypto" : "card",
-      paidAt: new Date(invoice.status_transitions.paid_at * 1000),
+      paidAt: invoice.status_transitions.paid_at 
+        ? new Date(invoice.status_transitions.paid_at * 1000) 
+        : new Date(),
       metadata: {
         invoice,
         paymentIntent,
@@ -617,19 +619,19 @@ export class StripeService {
   /**
    * Map Stripe subscription status to our status enum
    */
-  private mapStripeStatus(stripeStatus: Stripe.Subscription.Status): string {
-    const statusMap: Record<string, string> = {
+  private mapStripeStatus(stripeStatus: Stripe.Subscription.Status): "ACTIVE" | "CANCELLED" | "EXPIRED" | "PAST_DUE" | "TRIALING" | "UNPAID" {
+    const statusMap: Record<string, "ACTIVE" | "CANCELLED" | "EXPIRED" | "PAST_DUE" | "TRIALING" | "UNPAID"> = {
       active: "ACTIVE",
       canceled: "CANCELLED",
-      incomplete: "PENDING",
+      incomplete: "UNPAID",
       incomplete_expired: "EXPIRED",
       past_due: "PAST_DUE",
-      paused: "PENDING",
+      paused: "UNPAID",
       trialing: "TRIALING",
       unpaid: "UNPAID",
     };
 
-    return statusMap[stripeStatus] || "PENDING";
+    return statusMap[stripeStatus] || "UNPAID";
   }
 
   /**

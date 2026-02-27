@@ -539,7 +539,7 @@ router.get("/status/:paymentId", requireAuth, async (req: AuthRequest, res) => {
     const payment = await db.query.payments.findFirst({
       where: (payments, { and, eq }) =>
         and(
-          eq(payments.id, paymentId),
+          eq(payments.id, paymentId as string),
           eq(payments.userId, userId)
         ),
     });
@@ -588,7 +588,7 @@ router.get("/checkout-session/:sessionId", requireAuth, async (req: AuthRequest,
     const payment = await db.query.payments.findFirst({
       where: (payments, { and, eq }) =>
         and(
-          eq(payments.stripeCheckoutSessionId, sessionId),
+          eq(payments.stripeCheckoutSessionId, sessionId as string),
           eq(payments.userId, userId)
         ),
     });

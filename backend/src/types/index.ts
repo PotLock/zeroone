@@ -42,5 +42,6 @@ export interface PlanLimits {
 export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   FREE: { maxAgents: 1, memoryLimit: "128m", cpuQuota: 0.5 },
   PRO: { maxAgents: 5, memoryLimit: "256m", cpuQuota: 1.0 },
+  BUSINESS: { maxAgents: 10, memoryLimit: "384m", cpuQuota: 1.5 },
   ENTERPRISE: { maxAgents: Infinity, memoryLimit: "512m", cpuQuota: 2.0 },
 };
