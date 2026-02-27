@@ -88,9 +88,20 @@ export class CoinbaseCommerceService {
     this.apiKey = process.env.COINBASE_COMMERCE_API_KEY || "";
     this.webhookSecret = process.env.COINBASE_COMMERCE_WEBHOOK_SECRET || "";
 
+    // Validate API key format (should start with 'organizations/')
     if (!this.apiKey) {
-      console.warn("[coinbase] COINBASE_COMMERCE_API_KEY not configured");
+      console.warn("[coinbase] COINBASE_COMMERCE_API_KEY not configured - crypto payments disabled");
+    } else if (!this.apiKey.startsWith("organizations/")) {
+      console.error("[coinbase] COINBASE_COMMERCE_API_KEY has invalid format. Expected: organizations/.../api_keys/...");
+      this.apiKey = ""; // Disable to prevent API errors
     }
+  }
+
+  /**
+   * Check if Coinbase Commerce is properly configured
+   */
+  isConfigured(): boolean {
+    return !!this.apiKey && this.apiKey.startsWith("organizations/");
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {

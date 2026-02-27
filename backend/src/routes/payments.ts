@@ -325,6 +325,15 @@ router.post("/checkout/crypto", requireAuth, async (req: AuthRequest, res) => {
       return;
     }
 
+    // Check if Coinbase Commerce is configured
+    if (!coinbaseService.isConfigured()) {
+      res.status(503).json({
+        success: false,
+        error: "Cryptocurrency payments are not configured. Please contact support.",
+      });
+      return;
+    }
+
     // Get frontend URL for redirects
     const frontendUrl = process.env.FRONTEND_URL || (process.env.DOMAIN ? `${process.env.NODE_ENV === "production" ? "https" : "http"}://${process.env.DOMAIN}` : null);
     
