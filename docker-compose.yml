@@ -12,13 +12,12 @@ services:
       # Entry points
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      # Redirect HTTP → HTTPS
-      - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      # Let's Encrypt (ACME via TLS challenge)
+      # Global HTTP → HTTPS redirect (handled per-router instead)
+      # Let's Encrypt (ACME via HTTP challenge - more reliable on GCP)
       - --certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}
       - --certificatesresolvers.letsencrypt.acme.storage=/acme/acme.json
-      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
       # Dashboard (internal only, no public exposure)
       - --api.dashboard=true
     ports:
@@ -33,12 +32,19 @@ services:
       - zeroone-net
     labels:
       - traefik.enable=true
+      # HTTP → HTTPS redirect middleware
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true
       # Traefik dashboard — accessible at https://traefik.${DOMAIN}
       - traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${DOMAIN}`)
       - traefik.http.routers.traefik-dashboard.entrypoints=websecure
       - traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt
       - traefik.http.routers.traefik-dashboard.service=api@internal
       - traefik.http.routers.traefik-dashboard.middlewares=traefik-auth
+      # Dashboard HTTP (redirects to HTTPS)
+      - traefik.http.routers.traefik-dashboard-http.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.traefik-dashboard-http.entrypoints=web
+      - traefik.http.routers.traefik-dashboard-http.middlewares=redirect-to-https
       # Basic auth for dashboard (generate with: htpasswd -nb admin yourpassword)
       - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}
 
@@ -83,10 +89,15 @@ services:
       - zeroone-net
     labels:
       - traefik.enable=true
+      # HTTPS router
       - traefik.http.routers.backend.rule=Host(`api.${DOMAIN}`)
       - traefik.http.routers.backend.entrypoints=websecure
       - traefik.http.routers.backend.tls.certresolver=letsencrypt
       - traefik.http.services.backend.loadbalancer.server.port=3001
+      # HTTP router (redirects to HTTPS)
+      - traefik.http.routers.backend-http.rule=Host(`api.${DOMAIN}`)
+      - traefik.http.routers.backend-http.entrypoints=web
+      - traefik.http.routers.backend-http.middlewares=redirect-to-https@docker
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/health"]
       interval: 30s
