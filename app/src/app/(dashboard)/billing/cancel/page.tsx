@@ -17,7 +17,7 @@ export default function PaymentCancelPage() {
           You can try again anytime or choose a different plan.
         </p>
         
-        <div className="space-y-3 w-full">
+        <div className="space-y-3 w-full flex flex-col gap-5">
           <Link href="/dashboard/billing">
             <Button className="w-full gap-2">
               <ArrowLeft className="h-4 w-4" />

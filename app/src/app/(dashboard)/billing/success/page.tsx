@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { PaymentSuccessSkeleton } from "@/components/dashboard/skeletons";
 
@@ -35,7 +35,7 @@ export default function PaymentSuccessPage() {
             You may need to refresh the page to see your updated plan.
           </p>
           
-          <div className="space-y-3 w-full">
+          <div className="space-y-3 w-full flex flex-col gap-5">
             <Link href="/dashboard/billing">
               <Button className="w-full gap-2">
                 Go to Billing
