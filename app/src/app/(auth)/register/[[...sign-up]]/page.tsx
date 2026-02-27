@@ -27,17 +27,6 @@ export default function SignUpPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-sm">
-        {/* Logo */}
-        <div className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <span className="text-2xl font-bold">
-              <span className="text-primary">Zero</span>
-              <span className="text-foreground">One</span>
-            </span>
-          </Link>
-          <p className="mt-2 text-sm text-muted-foreground">Create your free account</p>
-        </div>
-
         <div className="w-fill">
           <SignUp
             appearance={{

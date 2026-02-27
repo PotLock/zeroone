@@ -13,18 +13,6 @@ export default function SignInPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-sm">
-        {/* Logo */}
-        <div className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-1">
-            <img src="/logo.png" className="w-10" alt="ZeroOne Logo" />
-            <span className="text-3xl font-bold">
-              <span className="text-primary">Zero</span>
-              <span className="text-foreground">One</span>
-            </span>
-          </Link>
-          <p className="mt-2 text-sm text-muted-foreground">Sign in to your account</p>
-        </div>
-
         <div className="w-full">
           <SignIn 
             appearance={{
