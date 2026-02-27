@@ -1,7 +1,6 @@
 "use client";
 
 import { SignIn } from "@clerk/nextjs";
-import Link from "next/link";
 import { dark } from "@clerk/themes";
 
 export default function SignInPage() {
